@@ -1,7 +1,9 @@
+# SHA-3 Cryptographic Hash Function Implementation
+
 This project presents a Java implementation of the SHA-3 cryptographic hash function inspired by designs of the National Institute of Standards and Technology (NIST).
 Implemented by Arsh Singh Saran and Hassan Ali.
 
-Key Features:
+## Key Features:
 
 SHA-3 Algorithm Implementation: Provides a complete implementation of the SHA-3 algorithm, including the Keccak-f permutation, initialization, update, and finalization routines.
 
