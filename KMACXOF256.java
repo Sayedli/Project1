@@ -1,10 +1,7 @@
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.math.BigInteger;
-/**
- * Implementation of the KMACXOF256 cryptographic hash function.
- * @Authors: Ali & Singh
- */
+
 public class KMACXOF256 {
 
     // XOR operation between two byte arrays
