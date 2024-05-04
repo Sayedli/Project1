@@ -1,6 +1,15 @@
 import java.util.Arrays;
 import java.math.BigInteger;
 
+/**
+ *
+ * Tiny SHA-3 implementation
+ * inspired by https://github.com/mjosaarinen/tiny_sha3/blob/master/sha3.c
+ *  Project 1 TCSS 487 With Palo Barreto
+ *
+ * @author Arsh Singh
+ * @author Hassan Ali
+ */
 
 public class KMACKOF256 {
 

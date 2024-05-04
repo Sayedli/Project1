@@ -5,15 +5,22 @@ import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.*;
 
+/**
+ *  Project 1 TCSS 487 With Palo Barreto
+ *
+ * @author Arsh Singh
+ * @author Hassan Ali
+ */
+
 public class CryptographyWorld {
 
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private static byte[] previousEncrypt;
-    private static final String GREETING = "Welcome to CryptographyWorld!";
-    private static final String MENU = "Choose an option:";
-    private static final String OUTRO = "CryptographyWorld Exiting.";
+    private static final String GREETING = "---Welcome to CryptographyWorld!---";
+    private static final String MENU = "\nWhat would you like to do?:";
+    private static final String OUTRO = "Exiting CryptographyWorld.";
 
 
     public static void main(String[] args) {
@@ -223,7 +230,7 @@ public class CryptographyWorld {
     }
 
     public static File getFileInput() {
-        String filePath = "Test.txt";
+        String filePath = "tester.txt";
 
         File theFile = new File(filePath);
 
