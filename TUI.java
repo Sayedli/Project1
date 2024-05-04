@@ -12,15 +12,15 @@ import java.util.*;
  * @author Hassan Ali
  */
 
-public class CryptographyWorld {
+public class TUI {
 
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private static byte[] previousEncrypt;
-    private static final String GREETING = "---Welcome to CryptographyWorld!---";
-    private static final String MENU = "\nWhat would you like to do?:";
-    private static final String OUTRO = "Exiting CryptographyWorld.";
+    private static final String GREETING = "--- Crypto Project 1 ---";
+    private static final String MENU = "\nWhat would you like to do?:\n";
+    private static final String OUTRO = "Project Exiting.";
 
 
     public static void main(String[] args) {
@@ -41,7 +41,7 @@ public class CryptographyWorld {
                 System.out.println(option);
             }
 
-            System.out.print("Enter your choice:");
+            System.out.print("\nEnter your choice:");
 
             int choice = scanner.nextInt();
             switch (choice) {
@@ -92,8 +92,8 @@ public class CryptographyWorld {
         }
         assert data != null;
         bytes = data.getBytes();
-        bytes = KMACKOF256.KMACXOF256("".getBytes(), bytes, 512, "D".getBytes());
-        System.out.println("Hashed result: " + KMACKOF256.bytesToHexString(bytes));
+        bytes = KMACXOF256.KMACXOF256("".getBytes(), bytes, 512, "D".getBytes());
+        System.out.println("Hashed result: " + KMACXOF256.bytesToHexString(bytes));
     }
 
     private static void computeAuthTag(String method) {
@@ -114,8 +114,8 @@ public class CryptographyWorld {
         passphrase = userInput.nextLine();
         assert data != null;
         bytes = data.getBytes();
-        bytes = KMACKOF256.KMACXOF256(passphrase.getBytes(), bytes, 512, "T".getBytes());
-        System.out.println("Authentication tag: " + KMACKOF256.bytesToHexString(bytes));
+        bytes = KMACXOF256.KMACXOF256(passphrase.getBytes(), bytes, 512, "T".getBytes());
+        System.out.println("Authentication tag: " + KMACXOF256.bytesToHexString(bytes));
     }
 
     private static void encryptFile() {
@@ -127,22 +127,44 @@ public class CryptographyWorld {
         System.out.println("Enter a passphrase: ");
         passphrase = input.nextLine();
         previousEncrypt = encryptWithKMAC(bytes, passphrase);
-        System.out.println("Encrypted text: " + KMACKOF256.bytesToHexString(previousEncrypt));
+        System.out.println("Encrypted text: " + KMACXOF256.bytesToHexString(previousEncrypt));
     }
 
+    public static File getFileInput() {
+        String filePath = "tester.txt";
+
+        File theFile = new File(filePath);
+
+        if (theFile.exists()) {
+            return theFile;
+        } else {
+            System.out.println("ERROR: File not found.");
+            return null;
+        }
+    }
+
+    public static String readFileToString( File theFile) {
+        String theString = null;
+        try {
+            theString = new String(Files.readAllBytes(theFile.getAbsoluteFile().toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return theString;
+    }
     private static byte[] encryptWithKMAC(byte[] m, String pw) {
         byte[] rand = new byte[64];
         secureRandom.nextBytes(rand);
 
-        byte[] keka = KMACKOF256.KMACXOF256(KMACKOF256.concat(rand, pw.getBytes()), "".getBytes(), 1024, "S".getBytes());
+        byte[] keka = KMACXOF256.KMACXOF256(KMACXOF256.concat(rand, pw.getBytes()), "".getBytes(), 1024, "S".getBytes());
         byte[] ke = Arrays.copyOfRange(keka, 0, 64);
         byte[] ka = Arrays.copyOfRange(keka, 64, 128);
 
-        byte[] c = KMACKOF256.KMACXOF256(ke, "".getBytes(), (m.length * 8), "SKE".getBytes());
-        c =  KMACKOF256.xorBytes(c, m);
-        byte[] t = KMACKOF256.KMACXOF256(ka, m, 512, "SKA".getBytes());
+        byte[] c = KMACXOF256.KMACXOF256(ke, "".getBytes(), (m.length * 8), "SKE".getBytes());
+        c =  KMACXOF256.xorBytes(c, m);
+        byte[] t = KMACXOF256.KMACXOF256(ka, m, 512, "SKA".getBytes());
 
-        return KMACKOF256.concat(KMACKOF256.concat(rand, c), t);
+        return KMACXOF256.concat(KMACXOF256.concat(rand, c), t);
     }
 
     private static void decryptFile(String method) {
@@ -156,10 +178,10 @@ public class CryptographyWorld {
         } else if (method.equals("UserInput")) {
             System.out.println("\nEnter the cryptogram in hex format (one line): \n");
             String cryptogramHex = input.nextLine();
-            byte[] hexBytes = KMACKOF256.hexStringToBytes(cryptogramHex);
+            byte[] hexBytes = KMACXOF256.hexStringToBytes(cryptogramHex);
             decryptedBytes = decryptWithKMAC(hexBytes, passphrase);
         }
-        System.out.println("\nDecryption result (Hex format):\n" + KMACKOF256.bytesToHexString(decryptedBytes));
+        System.out.println("\nDecryption result (Hex format):\n" + KMACXOF256.bytesToHexString(decryptedBytes));
         System.out.println("\nPlain Text:\n" + new String (decryptedBytes, StandardCharsets.UTF_8));
     }
     private static byte[] decryptWithKMAC(byte[] cryptogram, String pw) {
@@ -171,22 +193,22 @@ public class CryptographyWorld {
 
         byte[] tag = Arrays.copyOfRange(cryptogram, cryptogram.length - 64, cryptogram.length);
 
-        byte[] keka = KMACKOF256.KMACXOF256(KMACKOF256.concat(rand, pw.getBytes()), "".getBytes(), 1024, "S".getBytes());
+        byte[] keka = KMACXOF256.KMACXOF256(KMACXOF256.concat(rand, pw.getBytes()), "".getBytes(), 1024, "S".getBytes());
         byte[] ke = new byte[64];
         System.arraycopy(keka,0,ke,0,64);
         byte[] ka = new byte[64];
         System.arraycopy(keka, 64,ka,0,64);
 
-        byte[] m = KMACKOF256.KMACXOF256(ke, "".getBytes(), (in.length*  8), "SKE".getBytes());
-        m = KMACKOF256.xorBytes(m, in);
+        byte[] m = KMACXOF256.KMACXOF256(ke, "".getBytes(), (in.length*  8), "SKE".getBytes());
+        m = KMACXOF256.xorBytes(m, in);
 
-        byte[] tPrime = KMACKOF256.KMACXOF256(ka, m, 512, "SKA".getBytes());
+        byte[] tPrime = KMACXOF256.KMACXOF256(ka, m, 512, "SKA".getBytes());
 
         if (Arrays.equals(tag, tPrime)) {
             return m;
         }
         else {
-            throw new IllegalArgumentException("Tags didn't match");
+            throw new IllegalArgumentException("Mismatch on tags");
         }
     }
     private static String selectDecryptionMethod(Scanner userInput) {
@@ -203,7 +225,7 @@ public class CryptographyWorld {
                                         int minMenuInput, int maxMenuInput) {
         int input = getInteger(userInput, prompts);
         while (input < minMenuInput || input > maxMenuInput) {
-            System.out.print("Input out of range.\nPlease enter a number corresponding to a menu prompt.\n");
+            System.out.print("Input out of range.\nPlease enter a numerical value from the menu .\n");
             input = getInteger(userInput, prompts);
         }
         return input;
@@ -219,26 +241,4 @@ public class CryptographyWorld {
         return userInput.nextInt();
     }
 
-    public static String readFileToString( File theFile) {
-        String theString = null;
-        try {
-            theString = new String(Files.readAllBytes(theFile.getAbsoluteFile().toPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return theString;
-    }
-
-    public static File getFileInput() {
-        String filePath = "tester.txt";
-
-        File theFile = new File(filePath);
-
-        if (theFile.exists()) {
-            return theFile;
-        } else {
-            System.out.println("ERROR: File not found.");
-            return null;
-        }
-    }
 }

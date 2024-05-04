@@ -13,7 +13,7 @@ import java.math.BigInteger;
  * @author Hassan Ali
  */
 
-public class KMACKOF256 {
+public class KMACXOF256 {
 
     // Keccak round constants
     private static final long[] keccakfRndc = { 0x0000000000000001L, 0x0000000000008082L, 0x800000000000808aL,
