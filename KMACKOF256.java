@@ -3,8 +3,10 @@ import java.math.BigInteger;
 
 /**
  *
- * Tiny SHA-3 implementation
+ * Tiny SHA-3 implementation derived from NIST publication
+ * https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-185.pdf
  * inspired by https://github.com/mjosaarinen/tiny_sha3/blob/master/sha3.c
+ *
  *  Project 1 TCSS 487 With Palo Barreto
  *
  * @author Arsh Singh
