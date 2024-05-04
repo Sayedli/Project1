@@ -8,6 +8,12 @@ import java.util.*;
 /**
  *  Project 1 TCSS 487 With Palo Barreto
  *
+ * This class provides a Text-based User Interface (TUI) for Crypto Project 1.
+ * It allows users to generate hashes, create authentication tags, encrypt files,
+ * and decrypt symmetrically encrypted files with a passphrase.
+ * The TUI guides users through the available options and interacts with the user
+ * via command-line inputs and outputs.
+ *
  * @author Arsh Singh
  * @author Hassan Ali
  */
@@ -31,7 +37,7 @@ public class TUI {
         options.add("2. Create authentication tag for a file with a passphrase.");
         options.add("3. Encrypt file symmetrically with a passphrase.");
         options.add("4. Decrypt symmetrically encrypted file with a passphrase.");
-        options.add("0. Exit");
+        options.add("5. Exit");
 
         Scanner scanner = new Scanner(System.in);
 
@@ -57,7 +63,7 @@ public class TUI {
                 case 4:
                     decryptFile(selectDecryptionMethod(scanner));
                     break;
-                case 0:
+                case 5:
                     System.out.println(OUTRO);
                     scanner.close();
                     return;
@@ -68,6 +74,7 @@ public class TUI {
         }
     }
 
+    // Select method for file or text input
     private static String selectMethod(Scanner userInput) {
         String selectionPrompt = "Select an operation:\n" + "1) File\n" + "2) Text input\n";
         int result = getIntegerInRange(userInput, selectionPrompt, 1, 2);
@@ -78,6 +85,7 @@ public class TUI {
         }
     }
 
+    // Compute hash based on selected method
     private static void computeHash(String method) {
         byte[] bytes;
         String data = null;
@@ -96,6 +104,7 @@ public class TUI {
         System.out.println("Hashed result: " + KMACXOF256.bytesToHexString(bytes));
     }
 
+    // Compute authentication tag based on selected method
     private static void computeAuthTag(String method) {
         byte[] bytes;
         String data = null;
@@ -118,6 +127,7 @@ public class TUI {
         System.out.println("Authentication tag: " + KMACXOF256.bytesToHexString(bytes));
     }
 
+    // Encrypt file with a passphrase
     private static void encryptFile() {
         Scanner input = new Scanner(System.in);
         File file = getFileInput();
@@ -130,6 +140,18 @@ public class TUI {
         System.out.println("Encrypted text: " + KMACXOF256.bytesToHexString(previousEncrypt));
     }
 
+    // Read file to string
+    public static String readFileToString( File theFile) {
+        String theString = null;
+        try {
+            theString = new String(Files.readAllBytes(theFile.getAbsoluteFile().toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return theString;
+    }
+
+    // Get file input
     public static File getFileInput() {
         String filePath = "tester.txt";
 
@@ -143,15 +165,7 @@ public class TUI {
         }
     }
 
-    public static String readFileToString( File theFile) {
-        String theString = null;
-        try {
-            theString = new String(Files.readAllBytes(theFile.getAbsoluteFile().toPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return theString;
-    }
+    // Encrypt data using KMAC algorithm
     private static byte[] encryptWithKMAC(byte[] m, String pw) {
         byte[] rand = new byte[64];
         secureRandom.nextBytes(rand);
@@ -167,6 +181,7 @@ public class TUI {
         return KMACXOF256.concat(KMACXOF256.concat(rand, c), t);
     }
 
+    // Decrypt file based on selected method
     private static void decryptFile(String method) {
         Scanner input = new Scanner(System.in);
         String passphrase;
@@ -184,6 +199,8 @@ public class TUI {
         System.out.println("\nDecryption result (Hex format):\n" + KMACXOF256.bytesToHexString(decryptedBytes));
         System.out.println("\nPlain Text:\n" + new String (decryptedBytes, StandardCharsets.UTF_8));
     }
+
+    // Decrypt data using KMAC algorithm
     private static byte[] decryptWithKMAC(byte[] cryptogram, String pw) {
         byte[] rand = new byte[64];
 
@@ -211,6 +228,8 @@ public class TUI {
             throw new IllegalArgumentException("Mismatch on tags");
         }
     }
+
+    // Select decryption method
     private static String selectDecryptionMethod(Scanner userInput) {
         String menu = "Select the decryption method:\n" + "1) Decrypt the previously encrypted text.\n" + "2) Enter the cryptogram manually.\n";
         int input = getIntegerInRange(userInput, menu, 1, 2);
@@ -221,6 +240,7 @@ public class TUI {
         }
     }
 
+    // Get integer within a range from user input
     public static int getIntegerInRange(Scanner userInput, String prompts,
                                         int minMenuInput, int maxMenuInput) {
         int input = getInteger(userInput, prompts);
@@ -231,6 +251,7 @@ public class TUI {
         return input;
     }
 
+    // Get integer from user input
     public static int getInteger(Scanner userInput, String prompts) {
         System.out.println(prompts);
         while (!userInput.hasNextInt()) {
